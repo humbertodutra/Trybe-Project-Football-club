@@ -28,7 +28,7 @@ export default class LoginSerivce {
       return { code: httpStatusCodes.tokenNot,
         message: incorrectMailOrPass };
     }
-
+    console.log(email)
     const token = createToken(email);
     return { code: httpStatusCodes.ok, data: token };
   }
