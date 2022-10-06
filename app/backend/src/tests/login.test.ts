@@ -18,14 +18,14 @@ describe('Test the method post four "/login" router', () => {
 
    let chaiHttpResponse: Response;
 
-  before(async () => {
+  beforeEach(async () => {
     sinon
       .stub(UserModel, "findOne")
       .resolves(
         userInfo as UserModel);
   });
 
-  after(()=>{
+  afterEach(()=>{
     (UserModel.findOne as sinon.SinonStub).restore();
   })
 
