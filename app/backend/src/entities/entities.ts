@@ -10,3 +10,8 @@ export enum httpStatusCodes {
   emptyFields = 400,
   notExist = 404,
 }
+
+export interface TeamI {
+  id: number,
+  teamName: string,
+}
