@@ -38,9 +38,9 @@ export default class MatchesController {
 
   async updateMatchInProgress(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const infoToChange = req.body;
+    const {homeTeamGoals, awayTeamGoals}= req.body;
 
-    const update = await this.matchesService.updateMatchInProgress(Number(id), infoToChange)
+    const update = await this.matchesService.updateMatchInProgress(Number(id), Number(homeTeamGoals), Number(awayTeamGoals));
 
     return res.status(update.code).json(update.data);
 

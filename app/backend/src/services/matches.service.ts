@@ -53,8 +53,11 @@ export default class MatchesService {
     return { code: httpStatusCodes.ok, data: { message: 'Finished' } };
   }
 
-  async updateMatchInProgress(id: number, data: object){
-    await this.matchesModel.update({data}, {where: { id }} )
+  async updateMatchInProgress(id: number, homeGoals: number, awayGoals: number){
+    await this.matchesModel.update({
+      homeTeamGoals: homeGoals,
+      awayTeamGoals: awayGoals
+      }, {where: { id }} )
     return { code: httpStatusCodes.ok, data: {message: 'ok'}}
   }
 }
