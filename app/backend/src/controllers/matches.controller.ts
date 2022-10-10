@@ -21,7 +21,7 @@ export default class MatchesController {
     const matchToSave = req.body;
 
     const saveMatch = await this.matchesService.saveMatch(matchToSave);
-
+    
     if (!saveMatch.data) {
       return res.status(saveMatch.code).json({ "message": saveMatch.message });
     }
