@@ -16,4 +16,23 @@ export default class MatchesController {
 
     return res.status(code).json(data);
   }
+
+  async saveMatch(req: Request, res: Response): Promise<Response> {
+    const matchToSave = req.body;
+
+    const saveMatch = await this.matchesService.saveMatch(matchToSave);
+
+    if (!saveMatch.data) {
+      return res.status(saveMatch.code).json({ "message": saveMatch.message });
+    }
+
+    return res.status(saveMatch.code).json(saveMatch.data);
+  }
+
+  async changeMatchStatus(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+    const changeMatchStatus = await this.matchesService.changeMatchStatus(Number(id))
+    return res.status(changeMatchStatus.code).json(changeMatchStatus.data);
+
+  }
 }
