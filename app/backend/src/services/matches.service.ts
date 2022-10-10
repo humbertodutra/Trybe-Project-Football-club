@@ -52,4 +52,9 @@ export default class MatchesService {
     await this.matchesModel.update({ inProgress: false}, { where: { id }})
     return { code: httpStatusCodes.ok, data: { message: 'Finished' } };
   }
+
+  async updateMatchInProgress(id: number, data: object){
+    await this.matchesModel.update({data}, {where: { id }} )
+    return { code: httpStatusCodes.ok, data: {message: 'ok'}}
+  }
 }
