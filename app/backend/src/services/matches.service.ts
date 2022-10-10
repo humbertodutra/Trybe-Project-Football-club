@@ -33,7 +33,6 @@ export default class MatchesService {
   }
 
   async saveMatch(match: MatchesI) {
-    
     if (match.homeTeam === match.awayTeam) {
       return { code: httpStatusCodes.tokenNot,
         message: 'It is not possible to create a match with two equal teams' };
@@ -41,23 +40,21 @@ export default class MatchesService {
     try {
       const saveMatch = await this.matchesModel.create(match);
       return { code: httpStatusCodes.created, data: saveMatch };
-      
     } catch (error) {
-      return { code: httpStatusCodes.notExist, message: 'There is no team with such id!'}
+      return { code: httpStatusCodes.notExist, message: 'There is no team with such id!' };
     }
-    
   }
 
-  async changeMatchStatus(id: number){
-    await this.matchesModel.update({ inProgress: false}, { where: { id }})
+  async changeMatchStatus(id: number) {
+    await this.matchesModel.update({ inProgress: false }, { where: { id } });
     return { code: httpStatusCodes.ok, data: { message: 'Finished' } };
   }
 
-  async updateMatchInProgress(id: number, homeGoals: number, awayGoals: number){
+  async updateMatchInProgress(id: number, homeGoals: number, awayGoals: number) {
     await this.matchesModel.update({
       homeTeamGoals: homeGoals,
-      awayTeamGoals: awayGoals
-      }, {where: { id }} )
-    return { code: httpStatusCodes.ok, data: {message: 'ok'}}
+      awayTeamGoals: awayGoals,
+    }, { where: { id } });
+    return { code: httpStatusCodes.ok, data: { message: 'ok' } };
   }
 }

@@ -11,7 +11,7 @@ const matchController = new MatchesController(matchService);
 
 router.get('/', (req, res) => matchController.getAllMatches(req, res));
 router.post('/', tokenValidate, (req, res) => matchController.saveMatch(req, res));
-router.patch('/:id/finish', (req, res) => matchController.changeMatchStatus(req, res))
+router.patch('/:id/finish', (req, res) => matchController.changeMatchStatus(req, res));
 router.patch('/:id', (req, res) => matchController.updateMatchInProgress(req, res));
 
 export default router;

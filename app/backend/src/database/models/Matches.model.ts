@@ -5,6 +5,10 @@ import TeamModel from './Team.model';
 class MatchesModel extends Model {
   public id!: number;
   public teamName!: string;
+  public homeTeam!: number;
+  public awayTeam!: number;
+  public homeTeamGoals!: number;
+  public awayTeamGoals!: number;
 }
 MatchesModel.init({
   id: {
