@@ -23,6 +23,11 @@ export default class LeaderBoardService {
     const teams = await this._TeamModel.findAll();
     const teamScores: Promise<TeamScoreI>[] = [];
     for (let i = 0; i < teams.length; i += 1) {
+      if (filter === 'general') {
+        const teamScore = this.generateGeneralLeaderboard(teams[i].id, teams[i].teamName);
+        teamScores.push(teamScore);
+      }
+
       if (filter === 'home') {
         const teamScore = this.generateTeamHome(teams[i].id, teams[i].teamName);
         teamScores.push(teamScore);
@@ -119,5 +124,56 @@ export default class LeaderBoardService {
     const goalsOwn = teamMatches.reduce((acc, curr) => acc + curr.homeTeamGoals, 0);
 
     return [goalsFavor, goalsOwn];
+  }
+
+  private async generateGeneralLeaderboard(id: number, name: string) {
+    const [totalDraws, totalLosses, totalVictories,
+      totalGames] = await this.getTeamMatches(id);
+    const totalPoints = totalVictories * 3 + totalDraws * 1;
+
+    const [goalsFavor, goalsOwn] = await this.getGeneralGoals(id);
+    const teamScore: TeamScoreI = {
+      name,
+      totalPoints,
+      totalGames,
+      totalVictories,
+      totalDraws,
+      totalLosses,
+      goalsFavor,
+      goalsOwn,
+      goalsBalance: goalsFavor - goalsOwn,
+      efficiency: ((totalPoints / (totalGames * 3)) * 100).toFixed(2),
+    };
+
+    return teamScore;
+  }
+
+  private async getTeamMatches(id: number): Promise<number[]> {
+    const [totalDrawsHome,
+      totalLossesHome,
+      totalVictoriesHome,
+      HomeTeamMatches] = await this.getTeamMatchesHome(id);
+
+    const [totalDrawnsAway,
+      totalLossesAway,
+      totalVictoriesAway,
+      awayTeamMatches] = await this.getTeamMatchesAway(id);
+
+    return [
+      totalDrawsHome + totalDrawnsAway,
+      totalLossesHome + totalLossesAway,
+      totalVictoriesAway + totalVictoriesHome,
+      HomeTeamMatches + awayTeamMatches,
+    ];
+  }
+
+  private async getGeneralGoals(id: number): Promise<number[]> {
+    const [goalsFavorHome, goalsAgainstHome] = await this.getTeamHomeGoals(id);
+    const [goalsFavorAway, goalsAgainstAway] = await this.getTeamAwayGoals(id);
+
+    return [
+      goalsFavorHome + goalsFavorAway,
+      goalsAgainstHome + goalsAgainstAway,
+    ];
   }
 }

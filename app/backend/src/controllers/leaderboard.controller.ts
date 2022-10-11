@@ -15,4 +15,10 @@ export default class LeaderboardController {
 
     return res.status(200).json(b);
   }
+
+  async getGeneralStatus(req:Request, res: Response): Promise<Response> {
+    const c = await this.leaderboardService.getLeaderboard('general');
+
+    return res.status(200).json(c);
+  }
 }
