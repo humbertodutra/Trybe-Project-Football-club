@@ -19,12 +19,18 @@ export default class LeaderBoardService {
     private _MatchesModel = MatchesModel,
   ) {}
 
-  public async getLeaderboard() {
+  public async getLeaderboard(filter: 'home' | 'away' | 'general') {
     const teams = await this._TeamModel.findAll();
     const teamScores: Promise<TeamScoreI>[] = [];
     for (let i = 0; i < teams.length; i += 1) {
-      const teamScore = this.generateTeamHome(teams[i].id, teams[i].teamName);
-      teamScores.push(teamScore);
+      if (filter === 'home') {
+        const teamScore = this.generateTeamHome(teams[i].id, teams[i].teamName);
+        teamScores.push(teamScore);
+      }
+      if (filter === 'away') {
+        const teamScore = this.generateTeamAway(teams[i].id, teams[i].teamName);
+        teamScores.push(teamScore);
+      }
     }
 
     const board = await Promise.all(teamScores);
@@ -69,6 +75,48 @@ export default class LeaderBoardService {
 
     const goalsFavor = teamMatches.reduce((acc, curr) => acc + curr.homeTeamGoals, 0);
     const goalsOwn = teamMatches.reduce((acc, curr) => acc + curr.awayTeamGoals, 0);
+
+    return [goalsFavor, goalsOwn];
+  }
+
+  private async generateTeamAway(id: number, name: string) {
+    const [totalDraws, totalLosses, totalVictories,
+      totalGames] = await this.getTeamMatchesAway(id);
+    const totalPoints = totalVictories * 3 + totalDraws * 1;
+
+    const [goalsFavor, goalsOwn] = await this.getTeamAwayGoals(id);
+    const teamScore: TeamScoreI = {
+      name,
+      totalPoints,
+      totalGames,
+      totalVictories,
+      totalDraws,
+      totalLosses,
+      goalsFavor,
+      goalsOwn,
+      goalsBalance: goalsFavor - goalsOwn,
+      efficiency: ((totalPoints / (totalGames * 3)) * 100).toFixed(2),
+    };
+
+    return teamScore;
+  }
+
+  private async getTeamMatchesAway(teamId: number): Promise<number[]> {
+    const matches = await new this._MatchesService(MatchesModel).getMatchesInProgress(false);
+    const teamMatches = matches.data.filter(({ awayTeam }) => awayTeam === teamId);
+    const totalDraws = [...teamMatches.filter((d) => d.awayTeamGoals === d.homeTeamGoals)].length;
+    const totalLosses = [...teamMatches.filter((l) => l.awayTeamGoals < l.homeTeamGoals)].length;
+    const totalVictories = [...teamMatches.filter((w) => w.awayTeamGoals > w.homeTeamGoals)].length;
+
+    return [totalDraws, totalLosses, totalVictories, teamMatches.length];
+  }
+
+  private async getTeamAwayGoals(id: number) {
+    const matches = await new this._MatchesService(MatchesModel).getMatchesInProgress(false);
+    const teamMatches = matches.data.filter(({ awayTeam }) => awayTeam === id);
+
+    const goalsFavor = teamMatches.reduce((acc, curr) => acc + curr.awayTeamGoals, 0);
+    const goalsOwn = teamMatches.reduce((acc, curr) => acc + curr.homeTeamGoals, 0);
 
     return [goalsFavor, goalsOwn];
   }

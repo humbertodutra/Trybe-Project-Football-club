@@ -8,6 +8,7 @@ const router = Router();
 const leaderboardService = new LeaderBoardService();
 const leatherBoardController = new LeaderboardController(leaderboardService);
 
-router.get('/home', (req, res) => leatherBoardController.getAllTeams(req, res));
+router.get('/home', (req, res) => leatherBoardController.getHomeStatus(req, res));
+router.get('/away', (req, res) => leatherBoardController.getAwayStatus(req, res));
 
 export default router;

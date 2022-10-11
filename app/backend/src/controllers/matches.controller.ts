@@ -21,9 +21,9 @@ export default class MatchesController {
     const matchToSave = req.body;
 
     const saveMatch = await this.matchesService.saveMatch(matchToSave);
-    
+
     if (!saveMatch.data) {
-      return res.status(saveMatch.code).json({ "message": saveMatch.message });
+      return res.status(saveMatch.code).json({ message: saveMatch.message });
     }
 
     return res.status(saveMatch.code).json(saveMatch.data);
@@ -31,18 +31,21 @@ export default class MatchesController {
 
   async changeMatchStatus(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const changeMatchStatus = await this.matchesService.changeMatchStatus(Number(id))
+    const changeMatchStatus = await this.matchesService.changeMatchStatus(Number(id));
     return res.status(changeMatchStatus.code).json(changeMatchStatus.data);
-
   }
 
   async updateMatchInProgress(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const {homeTeamGoals, awayTeamGoals}= req.body;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
 
-    const update = await this.matchesService.updateMatchInProgress(Number(id), Number(homeTeamGoals), Number(awayTeamGoals));
+    const update = await
+    this.matchesService.updateMatchInProgress(
+      Number(id),
+      Number(homeTeamGoals),
+      Number(awayTeamGoals),
+    );
 
     return res.status(update.code).json(update.data);
-
   }
 }
